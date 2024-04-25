@@ -1,8 +1,7 @@
-from gpiozero import MCP3002
-import time
+from gpiozero import MCP3008
 import math
-
-adc = MCP3002(channel=0)
+import time 
+adc = MCP3008(channel=0)
 count = 0
 values = []
 volts = {0.4: 0.0,
@@ -12,7 +11,9 @@ volts = {0.4: 0.0,
          2.7: 90.0,
          2.9: 112.5,
          2.2: 135.0,
+         2.3: 135.0,  
          2.5: 157.5,
+         2.6: 157.5, 
          1.8: 180.0,
          2.0: 202.5,
          0.7: 225.0,
@@ -22,18 +23,16 @@ volts = {0.4: 0.0,
          0.2: 315.0,
          0.6: 337.5}
 
+
+
 #while True:
-#    wind =round(adc.value*3.3,1)
-#    if not wind in volts:
-#        print('unknown value ' + str(wind) + ' ' + str(volts[wind]))
-#    else:
-#        print('found ' + str(wind) + ' ' + str(volts[wind]))
-
-
+ #   wind = round(adc.value*3.3,1)
+  #  if not wind in volts:
+   #     print ('Unknown Value: ' + str(wind))
+    #else:
+     #   print ('found ' + str(wind) + ' ' + str(volts[wind]))
 
 def get_average(angles):
-    if len(angles)==0:
-        return 0.0
     sin_sum = 0.0
     cos_sum = 0.0
 
@@ -43,7 +42,6 @@ def get_average(angles):
         cos_sum += math.cos(r)
 
     flen = float(len(angles))
-    
     s = sin_sum / flen
     c = cos_sum / flen
     arc = math.degrees(math.atan(s / c))
@@ -52,7 +50,7 @@ def get_average(angles):
     if s > 0 and c > 0:
         average = arc
     elif c < 0:
-        average = arc + 180
+        average = arc + 180 
     elif s < 0 and c > 0:
         average = arc + 360
 
@@ -60,16 +58,44 @@ def get_average(angles):
 
 def get_value(length=5):
     data = []
-    #print("Measuring wind direction for %d seconds..." % length)
+    print("Measuring wind direction for %d seconds..." % length)
     start_time = time.time()
 
     while time.time() - start_time <= length:
         wind =round(adc.value*3.3,1)
         if not wind in volts: # keep only good measurements
             print('unknown value ' + str(wind))
-            pass
         else:
             data.append(volts[wind])
+        if str(wind)==1.4:
+           print("North")
+        if str(wind)==1.2:
+           print("South")
 
     return get_average(data)
+    
+
+while(True):
+        degrees=round(get_value())
+        print(degrees)
+        if 337.5<=degrees<=360:
+           print("N")
+        if 0<=degrees<=22.5:
+           print("N")
+        if 22.51<=degrees<=67.5:
+           print("NE") 
+        if 67.51<=degrees<=112.5:
+           print("E") 
+        if 112.51<=degrees<=157.5:
+           print("SE") 
+        if 157.51<=degrees<=202.5:
+           print("S") 
+        if 202.51<=degrees<=247.5:
+           print("SW") 
+        if 247.51<=degrees<=292.5:
+           print("W")
+        if 292.51<=degrees<=337.5:
+           print("NW")  
+        
+
 
