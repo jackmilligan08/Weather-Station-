@@ -1,5 +1,5 @@
-
 from gpiozero import Button
+import database 
 import time 
 import math
 import bme280_sensor 
@@ -11,7 +11,7 @@ print("test#1")
 wind_count = 0    # Counts how many half-rotations
 radius_cm = 9.0   # Radius of your anemometer
 wind_interval = 5 # How often (secs) to sample speed
-interval =  5     # measurements recorded every 5 minutes
+interval =  10     # measurements recorded every 5 minutes
 CM_IN_A_KM = 100000.0
 SECS_IN_AN_HOUR = 3600
 ADJUSTMENT = 1.18
@@ -66,13 +66,13 @@ print('DATA')
 
 wind_speed_sensor = Button(5)
 wind_speed_sensor.when_activated = spin
-#temp_probe = ds18b20_therm.DS18B20()
+temp_probe = ds18b20_therm.DS18B20()
 
 rain_sensor = Button(6)
 rain_sensor.when_pressed = bucket_tipped
 
 
-
+db = database.weather_database() 
 while True:
     start_time = time.time()
     while time.time() - start_time <= wind_interval:
@@ -80,11 +80,10 @@ while True:
         reset_wind()
 #        time.sleep(wind_interval)
         while time.time() - wind_start_time <= wind_interval:
-                store_directions.append(wind_direction2.get_value())
+              store_directions.append(wind_direction2.get_value())
         final_speed = calculate_speed(wind_interval)
         store_speeds.append(final_speed)
     wind_average = wind_direction2.get_average(store_directions) 
-
     if max(store_speeds)>maxspeed:
         maxspeed = max(store_speeds) 
 #wind gust is max speed which changes when there is a new "max" or high speed
@@ -93,13 +92,31 @@ while True:
     rainfall = rain_count * BUCKET_SIZE
     reset_rainfall()
     store_speeds = []
-    #print(store_directions)
-    store_directions = []
- #   ground_temp = temp_probe.read_temp()
-    #ground_temp = 0
+    print(store_directions)
+    ground_temp = temp_probe.read_temp()
     humidity, pressure, ambient_temp = bme280_sensor.read_all()
-    print('Wind Dir:',round(wind_average,1), 'Wind Speed:',round(wind_speed,1), 'Wind Gust:',round(wind_gust,1),
-          'Rainfall:',round(rainfall,1),'Humidity:',round(humidity,1),'Pressure:', round(pressure,1), 'Ambient Temp:',round(ambient_temp,1))
-    
+    print('Wind Dir:',round(wind_average,1))
+    if 337.5<=wind_average<=360:
+        print("N")
+    if 0<=wind_average<=22.5:
+        print("N")
+    if 22.51<=wind_average<=67.5:
+        print("NE") 
+    if 67.51<=wind_average<=112.5:
+        print("E") 
+    if 112.51<=wind_average<=157.5:
+        print("SE") 
+    if 157.51<=wind_average<=202.5:
+        print("S") 
+    if 202.51<=wind_average<=247.5:
+        print("SW") 
+    if 247.51<=wind_average<=292.5:
+        print("W")
+    if 292.51<=wind_average<=337.5:
+        print("NW") 
+    print('Wind Speed:',round(wind_speed,1), 'Wind Gust:',round(wind_gust,1),
+          'Rainfall:',round(rainfall,1),'Humidity:',round(humidity,1),'Pressure:', round(pres>
+    print('ground temp:', round(ground_temp,1))
+    db.insert(ambient_temp, ground_temp, 0, pressure, humidity, wind_average, wind_speed, win>
 
 
