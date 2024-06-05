@@ -1,6 +1,6 @@
-Raspberry Pi Weather Station
+Raspberry Pi Weather Station Project 
 
-Python code for a weather station that can detect temperature, ground temperature, humidty, pressure, wind direction, wind speed, and wind gust.
+Python code for a weather station that can detect temperature, ground temperature, humidity, pressure, wind direction, wind speed, and wind gust.
 Project for Hardware/Software Engineering Class 
 
 Documentation Link: 
